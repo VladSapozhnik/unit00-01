@@ -6,6 +6,15 @@ const app = express();
 
 app.use(express.json());
 
+export const HTTP_STATUS = {
+    OK_200: 200,
+    CREATED_201: 201,
+    NOT_CONTENT_204: 204,
+
+    BAD_REQUEST_400: 400,
+    NOT_FOUND_404: 404
+}
+
 interface User {
     id: number;
     name: string,
@@ -24,7 +33,7 @@ app.get('/users', (req: Request, res: Response) => {
     let foundUsers: User[] = db.users;
 
     if (!db.users.length) {
-        return res.sendStatus(404);
+        return res.sendStatus(HTTP_STATUS.NOT_FOUND_404);
     } else if (queryName) {
         foundUsers = db.users.filter((user: User) => user.name.toLowerCase().indexOf(queryName as string) > -1);
     }
@@ -38,7 +47,7 @@ app.get('/users/:id', (req: Request, res: Response) => {
     const user = db.users.find(user => user.id === +userId)
 
     if (!user) {
-        return res.sendStatus(404);
+        return res.sendStatus(HTTP_STATUS.NOT_FOUND_404);
     }
 
     res.json(user);
@@ -46,7 +55,7 @@ app.get('/users/:id', (req: Request, res: Response) => {
 
 app.post('/users', (req: Request, res: Response) => {
     if (!req.body?.name) {
-        return res.sendStatus(400);
+        return res.sendStatus(HTTP_STATUS.BAD_REQUEST_400);
     }
 
     const createUser: User = {
@@ -56,7 +65,7 @@ app.post('/users', (req: Request, res: Response) => {
 
     db.users.push(createUser);
 
-    res.status(201).send(createUser);
+    res.status(HTTP_STATUS.CREATED_201).send(createUser);
 })
 
 app.delete('/users/:id', (req: Request, res: Response) => {
@@ -65,12 +74,12 @@ app.delete('/users/:id', (req: Request, res: Response) => {
     const isUser = db.users.find(user => user.id === userId)
 
     if (!isUser) {
-        return res.sendStatus(404);
+        return res.sendStatus(HTTP_STATUS.NOT_FOUND_404);
     }
 
     db.users = db.users.filter((user: User) => user.id !== userId);
 
-    res.sendStatus(204)
+    res.sendStatus(HTTP_STATUS.NOT_CONTENT_204)
 })
 
 app.put('/users/:id', (req: Request, res: Response) => {
@@ -78,14 +87,14 @@ app.put('/users/:id', (req: Request, res: Response) => {
     const name: string | undefined = req.body?.name;
 
     if (!name) {
-        res.sendStatus(400);
+        res.sendStatus(HTTP_STATUS.BAD_REQUEST_400);
         return;
     }
 
     const isUser = db.users.find(user => user.id === userId)
 
     if (!isUser) {
-        return res.sendStatus(404);
+        return res.sendStatus(HTTP_STATUS.NOT_FOUND_404);
     }
 
     db.users = db.users.map((user: User): User => {
@@ -96,7 +105,7 @@ app.put('/users/:id', (req: Request, res: Response) => {
         return user;
     });
 
-    res.sendStatus(204)
+    res.sendStatus(HTTP_STATUS.NOT_CONTENT_204)
 })
 
 app.listen(port, () => {
