@@ -1,0 +1,35 @@
+{
+  "name": "unit00express",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Vlad Sapozhnik",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "start": "nodemon .\\dist\\index.js",
+    "inspect": "nodemon --inspect .\\dist\\index.js",
+    "watch": "tsc -w"
+  },
+  "dependencies": {
+    "express": "^5.1.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.3",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^24.6.2",
+    "@types/supertest": "^6.0.3",
+    "jest": "^30.2.0",
+    "nodemon": "^3.1.10",
+    "supertest": "^7.1.4",
+    "ts-jest": "^29.4.4",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  },
+  "nodemonConfig": {
+    "ignore": [
+      "**/test/**",
+      "**/docs/**"
+    ],
+    "delay": 2500
+  }
+}
