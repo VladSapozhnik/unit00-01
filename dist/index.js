@@ -6,18 +6,8 @@ app.use(express.json());
 const db = {
     users: [{ id: 1, name: 'Vlad' }, { id: 2, name: 'Vika' }]
 };
-// const users: [] = []
 app.get('/', (req, res) => {
     res.send('Main page!!!');
-});
-app.get('/number', (req, res) => {
-    const age = 16;
-    if (age >= 18) {
-        res.send('Super page!');
-    }
-    else {
-        res.send('Limit page!');
-    }
 });
 app.get('/users', (req, res) => {
     const queryName = req.query.name;
@@ -32,13 +22,14 @@ app.get('/users', (req, res) => {
 });
 app.get('/users/:id', (req, res) => {
     const userId = req.params.id;
-    if (!db.users.length || !req.params.id) {
+    const user = db.users.find(user => user.id === +userId);
+    if (!user) {
         return res.sendStatus(404);
     }
-    res.json(db.users.find(user => user.id === +userId));
+    res.json(user);
 });
 app.post('/users', (req, res) => {
-    if (!req.body) {
+    if (!req.body?.name) {
         return res.sendStatus(400);
     }
     const createUser = {
@@ -49,8 +40,31 @@ app.post('/users', (req, res) => {
     res.status(201).send(createUser);
 });
 app.delete('/users/:id', (req, res) => {
-    const userId = req.params.id;
-    db.users = db.users.filter((user) => user.id !== +userId);
+    const userId = Number(req.params.id);
+    const isUser = db.users.find(user => user.id === userId);
+    if (!isUser) {
+        return res.sendStatus(404);
+    }
+    db.users = db.users.filter((user) => user.id !== userId);
+    res.sendStatus(204);
+});
+app.put('/users/:id', (req, res) => {
+    const userId = Number(req.params.id);
+    const name = req.body?.name;
+    if (!name) {
+        res.sendStatus(400);
+        return;
+    }
+    const isUser = db.users.find(user => user.id === userId);
+    if (!isUser) {
+        return res.sendStatus(404);
+    }
+    db.users = db.users.map((user) => {
+        if (user.id === userId) {
+            user.name = name;
+        }
+        return user;
+    });
     res.sendStatus(204);
 });
 app.listen(port, () => {

@@ -14,20 +14,9 @@ interface User {
 const db = {
     users: [{id: 1, name: 'Vlad'}, {id: 2, name: 'Vika'}]
 };
-// const users: [] = []
 
 app.get('/', (req: Request, res: Response) => {
     res.send('Main page!!!')
-})
-
-app.get('/number', (req: Request, res: Response) => {
-    const age = 16;
-
-    if (age >= 18) {
-        res.send('Super page!')
-    } else {
-        res.send('Limit page!')
-    }
 })
 
 app.get('/users', (req: Request, res: Response) => {
@@ -44,17 +33,19 @@ app.get('/users', (req: Request, res: Response) => {
 })
 
 app.get('/users/:id', (req: Request, res: Response) => {
-    const userId: string | undefined = req.params.id;
+    const userId: string = req.params.id!;
 
-    if (!db.users.length || !req.params.id) {
+    const user = db.users.find(user => user.id === +userId)
+
+    if (!user) {
         return res.sendStatus(404);
     }
 
-    res.json(db.users.find(user => user.id === +userId!));
+    res.json(user);
 })
 
 app.post('/users', (req: Request, res: Response) => {
-    if (!req.body) {
+    if (!req.body?.name) {
         return res.sendStatus(400);
     }
 
@@ -69,9 +60,41 @@ app.post('/users', (req: Request, res: Response) => {
 })
 
 app.delete('/users/:id', (req: Request, res: Response) => {
-    const userId: string | undefined = req.params.id;
+    const userId: number = Number(req.params.id);
 
-    db.users = db.users.filter((user: User) => user.id !== +userId!);
+    const isUser = db.users.find(user => user.id === userId)
+
+    if (!isUser) {
+        return res.sendStatus(404);
+    }
+
+    db.users = db.users.filter((user: User) => user.id !== userId);
+
+    res.sendStatus(204)
+})
+
+app.put('/users/:id', (req: Request, res: Response) => {
+    const userId: number = Number(req.params.id);
+    const name: string | undefined = req.body?.name;
+
+    if (!name) {
+        res.sendStatus(400);
+        return;
+    }
+
+    const isUser = db.users.find(user => user.id === userId)
+
+    if (!isUser) {
+        return res.sendStatus(404);
+    }
+
+    db.users = db.users.map((user: User): User => {
+        if(user.id === userId){
+            user.name = name;
+        }
+
+        return user;
+    });
 
     res.sendStatus(204)
 })
