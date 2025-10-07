@@ -4,7 +4,7 @@ export const app = express();
 
 app.use(express.json());
 
-const dateIso: string = new Date().toISOString()
+export const dateIso: string = new Date().toISOString()
 
 export const HTTP_STATUS = {
     OK_200: 200,
@@ -26,9 +26,13 @@ export enum AvailableResolutions {
     P2160 = "P2160",
 }
 
-type Resolution = typeof AvailableResolutions[number];
-
-
+class HttpError extends Error {
+    statusCode: number;
+    constructor(statusCode: number, message: string) {
+        super(message);
+        this.statusCode = statusCode;
+    }
+}
 
 interface User {
     id: number;
@@ -63,10 +67,10 @@ app.get('/videos', (req: Request, res: Response) => {
     res.json(videos);
 })
 
-app.get('/users/:id', (req: Request, res: Response) => {
-    const videoId: string = req.params.id!;
+app.get('/videos/:id', (req: Request, res: Response) => {
+    const videoId: number = Number(req.params.id);
 
-    const video = db.videos.find(video => video.id === +videoId)
+    const video = db.videos.find(video => video.id === videoId)
 
     if (!video) {
         res.sendStatus(HTTP_STATUS.NOT_FOUND_404);
@@ -109,30 +113,59 @@ app.post('/videos', (req: Request, res: Response) => {
 })
 
 app.put('/videos/:id', (req: Request, res: Response) => {
-    const userId: number = Number(req.params.id);
-    const name: string | undefined = req.body?.name;
+    // const userId: number = Number(req.params.id);
+    // const name: string | undefined = req.body?.name;
+    //
+    // const videoEdit = {
+    //     "title": "string",
+    //     "author": "string",
+    //     "availableResolutions": ["P144"],
+    //     "canBeDownloaded": true,
+    //     "minAgeRestriction": 18,
+    //     "publicationDate": "2025-10-07T10:06:12.459Z"
+    // }
+    //
+    // if (!name) {
+    //     res.sendStatus(HTTP_STATUS.BAD_REQUEST_400);
+    //     return;
+    // }
+    //
+    // const existUser = db.users.find(user => user.id === userId)
+    //
+    // if (!existUser) {
+    //     res.sendStatus(HTTP_STATUS.NOT_FOUND_404);
+    //     return;
+    // }
+    //
+    // db.users = db.users.map((user: User): User => {
+    //     if(user.id === userId){
+    //         user.name = name;
+    //     }
+    //
+    //     return user;
+    // });
+    //
+    // res.sendStatus(HTTP_STATUS.NOT_CONTENT_204)
 
-    if (!name) {
-        res.sendStatus(HTTP_STATUS.BAD_REQUEST_400);
+    const videoId: number = Number(req.params.id);
+
+    const existVideo = db.videos.find(video => video.id === videoId);
+
+    if (!existVideo) {
+        res.status(HTTP_STATUS.NOT_FOUND_404);
         return;
     }
 
-    const existUser = db.users.find(user => user.id === userId)
+    const { title, author, availableResolutions, minAgeRestriction, canBeDownloaded } = req.body;
 
-    if (!existUser) {
-        res.sendStatus(HTTP_STATUS.NOT_FOUND_404);
-        return;
+    const videoEdit = {
+        title,
+        author,
+        availableResolutions,
+        canBeDownloaded,
+        minAgeRestriction,
+        "publicationDate": dateIso
     }
-
-    db.users = db.users.map((user: User): User => {
-        if(user.id === userId){
-            user.name = name;
-        }
-
-        return user;
-    });
-
-    res.sendStatus(HTTP_STATUS.NOT_CONTENT_204)
 })
 
 app.delete('/videos/:id', (req: Request, res: Response) => {
@@ -147,6 +180,11 @@ app.delete('/videos/:id', (req: Request, res: Response) => {
 
     db.videos = db.videos.filter((video) => video.id !== videoId);
 
+    res.sendStatus(HTTP_STATUS.NOT_CONTENT_204)
+})
+
+app.delete('/testing/all-data', (req: Request, res: Response) => {
+    db.videos = [];
     res.sendStatus(HTTP_STATUS.NOT_CONTENT_204)
 })
 
