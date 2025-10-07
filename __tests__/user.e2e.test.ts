@@ -1,5 +1,5 @@
 import request from "supertest";
-import {app, HTTP_STATUS} from "../../src";
+import {app, HTTP_STATUS} from "../src";
 
 const exempleVideo = {
     "title": "Как проходить проверку API автоматизированными тестами",
@@ -65,6 +65,6 @@ describe('/videos', () => {
 
         await request(app).delete(`/videos/${videoId}`).expect(HTTP_STATUS.NOT_CONTENT_204);
 
-        await request(app).get(`/videos/${videoId}`).expect(HTTP_STATUS.NOT_FOUND_404);
+        await request(app).get(`/videos`).expect(HTTP_STATUS.OK_200, []);
     })
 })

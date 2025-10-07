@@ -85,12 +85,12 @@ app.post('/videos', (req: Request, res: Response) => {
 
     const isValidAvailableResolutions: boolean = Array.isArray(availableResolutions) && availableResolutions.every((resolution: string)  => (Object.values(AvailableResolutions) as string[]).includes(resolution));
 
-    if (!title || !author || !isValidAvailableResolutions) {
+    if (String(title) && !title.trim() || String(author) && !author.trim() || !isValidAvailableResolutions) {
         res.status(HTTP_STATUS.BAD_REQUEST_400).send({
-            "errorsMessages": [
+            errorsMessages: [
                 {
                     "message": "Invalid input data. Need title, author, and availableResolutions[]",
-                    "field": "string"
+                    "field": "title, author, and availableResolutions[]"
                 }
             ]
         });
