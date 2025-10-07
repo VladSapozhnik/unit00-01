@@ -1,9 +1,10 @@
-// const express = require('express');
 import express, { Request, Response } from "express";
 const port = 3005;
 export const app = express();
 
 app.use(express.json());
+
+const dateIso: string = new Date().toISOString()
 
 export const HTTP_STATUS = {
     OK_200: 200,
@@ -14,77 +15,100 @@ export const HTTP_STATUS = {
     NOT_FOUND_404: 404
 }
 
+export enum AvailableResolutions {
+    P144 = "P144",
+    P240 = "P240",
+    P360 = "P360",
+    P480 = "P480",
+    P720 = "P720",
+    P1080 = "P1080",
+    P1440 = "P1440",
+    P2160 = "P2160",
+}
+
+type Resolution = typeof AvailableResolutions[number];
+
+
+
 interface User {
     id: number;
     name: string,
 }
 
 const db = {
-    users: [{id: 1, name: 'Vlad'}, {id: 2, name: 'Vika'}]
+    users: [{id: 1, name: 'Vlad'}, {id: 2, name: 'Vika'}],
+    videos: [
+        {
+            "id": 1,
+            "title": "Как проходить проверку API автоматизированными тестами",
+            "author": "it-incubator",
+            "canBeDownloaded": true,
+            "minAgeRestriction": null,
+            "createdAt": "2025-10-07T08:06:59.355Z",
+            "publicationDate": "2025-10-07T08:06:59.355Z",
+            "availableResolutions": [
+                "P144"
+            ]
+        }
+    ]
 };
 
 app.get('/', (req: Request, res: Response) => {
     res.send('Main page!!!')
 })
 
-app.get('/users', (req: Request, res: Response) => {
-    const queryName = req.query.name;
-    let foundUsers: User[] = db.users;
-
-    if (!db.users.length) {
-        res.sendStatus(HTTP_STATUS.NOT_FOUND_404);
-        return;
-    } else if (queryName) {
-        foundUsers = db.users.filter((user: User) => user.name.toLowerCase().indexOf(queryName as string) > -1);
-    }
-    
-    res.json(foundUsers)
+app.get('/videos', (req: Request, res: Response) => {
+    //Если эмитировать получение данных с db
+    const videos = db.videos.map(video => video);
+    res.json(videos);
 })
 
 app.get('/users/:id', (req: Request, res: Response) => {
-    const userId: string = req.params.id!;
+    const videoId: string = req.params.id!;
 
-    const user = db.users.find(user => user.id === +userId)
+    const video = db.videos.find(video => video.id === +videoId)
 
-    if (!user) {
+    if (!video) {
         res.sendStatus(HTTP_STATUS.NOT_FOUND_404);
         return;
     }
 
-    res.json(user);
+    res.json(video);
 })
 
-app.post('/users', (req: Request, res: Response) => {
-    if (!req.body?.name) {
-        return res.sendStatus(HTTP_STATUS.BAD_REQUEST_400);
+app.post('/videos', (req: Request, res: Response) => {
+    const { title, author, availableResolutions } = req.body;
+
+    const isValidAvailableResolutions: boolean = Array.isArray(availableResolutions) && availableResolutions.every((resolution: string)  => (Object.values(AvailableResolutions) as string[]).includes(resolution));
+
+    if (!title || !author || !isValidAvailableResolutions) {
+        res.status(HTTP_STATUS.BAD_REQUEST_400).send({
+            "errorsMessages": [
+                {
+                    "message": "Invalid input data. Need title, author, and availableResolutions[]",
+                    "field": "string"
+                }
+            ]
+        });
+        return;
     }
 
-    const createUser: User = {
+    const video = {
         id: Number(new Date()),
-        name: req.body.name,
+        title,
+        author,
+        canBeDownloaded: true,
+        minAgeRestriction: null,
+        createdAt: dateIso,
+        publicationDate: dateIso,
+        availableResolutions,
     }
 
-    db.users.push(createUser);
-
-    return res.status(HTTP_STATUS.CREATED_201).send(createUser);
+    db.videos.push(video);
+    res.status(HTTP_STATUS.CREATED_201).json(video);
 })
 
-app.delete('/users/:id', (req: Request, res: Response) => {
-    const userId: number = Number(req.params.id);
-
-    const isUser = db.users.find(user => user.id === userId)
-
-    if (!isUser) {
-        res.sendStatus(HTTP_STATUS.NOT_FOUND_404);
-        return;
-    }
-
-    db.users = db.users.filter((user: User) => user.id !== userId);
-
-    res.sendStatus(HTTP_STATUS.NOT_CONTENT_204)
-})
-
-app.put('/users/:id', (req: Request, res: Response) => {
+app.put('/videos/:id', (req: Request, res: Response) => {
     const userId: number = Number(req.params.id);
     const name: string | undefined = req.body?.name;
 
@@ -93,9 +117,9 @@ app.put('/users/:id', (req: Request, res: Response) => {
         return;
     }
 
-    const isUser = db.users.find(user => user.id === userId)
+    const existUser = db.users.find(user => user.id === userId)
 
-    if (!isUser) {
+    if (!existUser) {
         res.sendStatus(HTTP_STATUS.NOT_FOUND_404);
         return;
     }
@@ -107,6 +131,21 @@ app.put('/users/:id', (req: Request, res: Response) => {
 
         return user;
     });
+
+    res.sendStatus(HTTP_STATUS.NOT_CONTENT_204)
+})
+
+app.delete('/videos/:id', (req: Request, res: Response) => {
+    const videoId: number = Number(req.params.id);
+
+    const existVideo = db.videos.find(video => video.id === videoId)
+
+    if (!existVideo) {
+        res.sendStatus(HTTP_STATUS.NOT_FOUND_404);
+        return;
+    }
+
+    db.videos = db.videos.filter((video) => video.id !== videoId);
 
     res.sendStatus(HTTP_STATUS.NOT_CONTENT_204)
 })
