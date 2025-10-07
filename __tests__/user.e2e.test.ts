@@ -19,7 +19,14 @@ describe('/videos', () => {
     });
 
     it("should return 400 and not create video if request body attribute is empty", async () => {
-        await request(app).post('/videos').send({...exempleVideo, title: ""}).expect(HTTP_STATUS.BAD_REQUEST_400);
+        await request(app).post('/videos').send({...exempleVideo, title: ""}).expect(HTTP_STATUS.BAD_REQUEST_400, {
+            errorsMessages: [
+                {
+                    "message": "Invalid input data. Need title, author, and availableResolutions[]",
+                    "field": "title, author, and availableResolutions[]"
+                }
+            ]
+        });
 
         await request(app).get("/videos").expect(HTTP_STATUS.OK_200, []);
     })

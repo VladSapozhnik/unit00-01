@@ -70,7 +70,8 @@ exports.app.get('/videos/:id', (req, res) => {
 exports.app.post('/videos', (req, res) => {
     const { title, author, availableResolutions } = req.body;
     const isValidAvailableResolutions = Array.isArray(availableResolutions) && availableResolutions.every((resolution) => Object.values(AvailableResolutions).includes(resolution));
-    if (String(title) && !title.trim() || String(author) && !author.trim() || !isValidAvailableResolutions) {
+    if (typeof title !== "string" || title.trim() === "" ||
+        typeof author !== "string" || author.trim() === "" || !isValidAvailableResolutions) {
         res.status(exports.HTTP_STATUS.BAD_REQUEST_400).send({
             errorsMessages: [
                 {
