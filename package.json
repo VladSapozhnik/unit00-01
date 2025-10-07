@@ -4,11 +4,10 @@
   "main": "index.js",
   "author": "Vlad Sapozhnik",
   "license": "MIT",
-  "type": "module",
   "scripts": {
-    "start": "nodemon .\\dist\\index.js",
-    "inspect": "nodemon --inspect .\\dist\\index.js",
-    "watch": "tsc -w"
+    "dev": "nodemon --inspect dist/index.js",
+    "watch": "tsc -w",
+    "test": "jest"
   },
   "dependencies": {
     "express": "^5.1.0"

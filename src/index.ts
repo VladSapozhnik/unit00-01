@@ -1,8 +1,7 @@
 // const express = require('express');
-import express from "express";
-import type { Request, Response } from "express";
+import express, { Request, Response } from "express";
 const port = 3005;
-const app = express();
+export const app = express();
 
 app.use(express.json());
 
@@ -33,7 +32,8 @@ app.get('/users', (req: Request, res: Response) => {
     let foundUsers: User[] = db.users;
 
     if (!db.users.length) {
-        return res.sendStatus(HTTP_STATUS.NOT_FOUND_404);
+        res.sendStatus(HTTP_STATUS.NOT_FOUND_404);
+        return;
     } else if (queryName) {
         foundUsers = db.users.filter((user: User) => user.name.toLowerCase().indexOf(queryName as string) > -1);
     }
@@ -47,7 +47,8 @@ app.get('/users/:id', (req: Request, res: Response) => {
     const user = db.users.find(user => user.id === +userId)
 
     if (!user) {
-        return res.sendStatus(HTTP_STATUS.NOT_FOUND_404);
+        res.sendStatus(HTTP_STATUS.NOT_FOUND_404);
+        return;
     }
 
     res.json(user);
@@ -65,7 +66,7 @@ app.post('/users', (req: Request, res: Response) => {
 
     db.users.push(createUser);
 
-    res.status(HTTP_STATUS.CREATED_201).send(createUser);
+    return res.status(HTTP_STATUS.CREATED_201).send(createUser);
 })
 
 app.delete('/users/:id', (req: Request, res: Response) => {
@@ -74,7 +75,8 @@ app.delete('/users/:id', (req: Request, res: Response) => {
     const isUser = db.users.find(user => user.id === userId)
 
     if (!isUser) {
-        return res.sendStatus(HTTP_STATUS.NOT_FOUND_404);
+        res.sendStatus(HTTP_STATUS.NOT_FOUND_404);
+        return;
     }
 
     db.users = db.users.filter((user: User) => user.id !== userId);
@@ -94,7 +96,8 @@ app.put('/users/:id', (req: Request, res: Response) => {
     const isUser = db.users.find(user => user.id === userId)
 
     if (!isUser) {
-        return res.sendStatus(HTTP_STATUS.NOT_FOUND_404);
+        res.sendStatus(HTTP_STATUS.NOT_FOUND_404);
+        return;
     }
 
     db.users = db.users.map((user: User): User => {
