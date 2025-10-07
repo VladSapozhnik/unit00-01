@@ -34,7 +34,6 @@ class HttpError extends Error {
     }
 }
 const db = {
-    users: [{ id: 1, name: 'Vlad' }, { id: 2, name: 'Vika' }],
     videos: [
         {
             "id": 1,
@@ -45,7 +44,7 @@ const db = {
             "createdAt": "2025-10-07T08:06:59.355Z",
             "publicationDate": "2025-10-07T08:06:59.355Z",
             "availableResolutions": [
-                "P144"
+                AvailableResolutions.P240
             ]
         }
     ]
@@ -70,8 +69,8 @@ exports.app.get('/videos/:id', (req, res) => {
 exports.app.post('/videos', (req, res) => {
     const { title, author, availableResolutions } = req.body;
     const isValidAvailableResolutions = Array.isArray(availableResolutions) && availableResolutions.every((resolution) => Object.values(AvailableResolutions).includes(resolution));
-    if (typeof title !== "string" || title.trim() === "" ||
-        typeof author !== "string" || author.trim() === "" || !isValidAvailableResolutions) {
+    if (typeof title !== "string" || title.trim() === "" || title.length > 39,
+        typeof author !== "string" || author.trim() === "" || author.length > 19 || !isValidAvailableResolutions) {
         res.status(exports.HTTP_STATUS.BAD_REQUEST_400).send({
             errorsMessages: [
                 {
@@ -130,7 +129,7 @@ exports.app.put('/videos/:id', (req, res) => {
     //
     // res.sendStatus(HTTP_STATUS.NOT_CONTENT_204)
     const videoId = Number(req.params.id);
-    const existVideo = db.videos.find(video => video.id === videoId);
+    const existVideo = db.videos.find((video) => video.id === videoId);
     if (!existVideo) {
         res.status(exports.HTTP_STATUS.NOT_FOUND_404);
         return;

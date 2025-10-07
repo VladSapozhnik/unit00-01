@@ -26,6 +26,17 @@ export enum AvailableResolutions {
     P2160 = "P2160",
 }
 
+interface Video {
+    id: number,
+    title: string,
+    author: string,
+    canBeDownloaded: boolean,
+    minAgeRestriction: null | number,
+    createdAt: string,
+    publicationDate: string,
+    availableResolutions: AvailableResolutions[]
+}
+
 class HttpError extends Error {
     statusCode: number;
     constructor(statusCode: number, message: string) {
@@ -34,13 +45,7 @@ class HttpError extends Error {
     }
 }
 
-interface User {
-    id: number;
-    name: string,
-}
-
 const db = {
-    users: [{id: 1, name: 'Vlad'}, {id: 2, name: 'Vika'}],
     videos: [
         {
             "id": 1,
@@ -51,7 +56,7 @@ const db = {
             "createdAt": "2025-10-07T08:06:59.355Z",
             "publicationDate": "2025-10-07T08:06:59.355Z",
             "availableResolutions": [
-                "P144"
+                AvailableResolutions.P240
             ]
         }
     ]
@@ -70,7 +75,7 @@ app.get('/videos', (req: Request, res: Response) => {
 app.get('/videos/:id', (req: Request, res: Response) => {
     const videoId: number = Number(req.params.id);
 
-    const video = db.videos.find(video => video.id === videoId)
+    const video: Video | undefined = db.videos.find(video => video.id === videoId)
 
     if (!video) {
         res.sendStatus(HTTP_STATUS.NOT_FOUND_404);
@@ -85,8 +90,8 @@ app.post('/videos', (req: Request, res: Response) => {
 
     const isValidAvailableResolutions: boolean = Array.isArray(availableResolutions) && availableResolutions.every((resolution: string)  => (Object.values(AvailableResolutions) as string[]).includes(resolution));
 
-    if (typeof title !== "string" || title.trim() === "" ||
-        typeof author !== "string" || author.trim() === "" || !isValidAvailableResolutions) {
+    if (typeof title !== "string" || title.trim() === "" || title.length > 39,
+        typeof author !== "string" || author.trim() === "" || author.length > 19 || !isValidAvailableResolutions) {
         res.status(HTTP_STATUS.BAD_REQUEST_400).send({
             errorsMessages: [
                 {
@@ -150,7 +155,7 @@ app.put('/videos/:id', (req: Request, res: Response) => {
 
     const videoId: number = Number(req.params.id);
 
-    const existVideo = db.videos.find(video => video.id === videoId);
+    const existVideo: Video | undefined = db.videos.find((video: Video): boolean => video.id === videoId);
 
     if (!existVideo) {
         res.status(HTTP_STATUS.NOT_FOUND_404);
@@ -172,14 +177,14 @@ app.put('/videos/:id', (req: Request, res: Response) => {
 app.delete('/videos/:id', (req: Request, res: Response) => {
     const videoId: number = Number(req.params.id);
 
-    const existVideo = db.videos.find(video => video.id === videoId)
+    const existVideo: Video | undefined = db.videos.find(video => video.id === videoId)
 
     if (!existVideo) {
         res.sendStatus(HTTP_STATUS.NOT_FOUND_404);
         return;
     }
 
-    db.videos = db.videos.filter((video) => video.id !== videoId);
+    db.videos = db.videos.filter((video: Video): boolean => video.id !== videoId);
 
     res.sendStatus(HTTP_STATUS.NOT_CONTENT_204)
 })
