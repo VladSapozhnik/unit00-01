@@ -18,7 +18,10 @@ const validationCreateDto = (data) => {
     }
     else if (data.availableResolutions) {
         if (!Array.isArray(data.availableResolutions)) {
-            errors.push({ message: 'Invalid author', field: 'availableResolutions' });
+            errors.push({ message: 'Invalid availableResolutions', field: 'availableResolutions' });
+        }
+        else if (!data.availableResolutions.length) {
+            errors.push({ message: 'AvailableResolutions is not empty', field: 'availableResolutions' });
         }
         else {
             const isValidAvailableResolutions = data.availableResolutions.every((resolution) => Object.values(index_1.AvailableResolutions).includes(resolution));

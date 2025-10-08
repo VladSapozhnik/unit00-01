@@ -11,11 +11,13 @@ const dateIso: string = new Date().toISOString()
 export const HTTP_STATUS = {
     OK_200: 200,
     CREATED_201: 201,
-    NOT_CONTENT_204: 204,
+    NO_CONTENT_204: 204,
 
     BAD_REQUEST_400: 400,
     NOT_FOUND_404: 404
 }
+
+
 
 export enum AvailableResolutions {
     P144 = "P144",
@@ -28,7 +30,7 @@ export enum AvailableResolutions {
     P2160 = "P2160",
 }
 
-interface VideoDto {
+export interface VideoDto {
     id: number,
     title: string,
     author: string,
@@ -45,23 +47,22 @@ export interface ValidationError {
 }
 
 
-const db = {
+export const db = {
     videos: [
         {
             "id": 1,
             "title": "Как проходить проверку API автоматизированными тестами",
             "author": "it-incubator",
+            "availableResolutions": [
+                AvailableResolutions.P240
+            ],
             "canBeDownloaded": true,
             "minAgeRestriction": null,
             "createdAt": "2025-10-07T08:06:59.355Z",
             "publicationDate": "2025-10-07T08:06:59.355Z",
-            "availableResolutions": [
-                AvailableResolutions.P240
-            ]
         }
     ]
 };
-// const allowedResolutions: AvailableResolutions[] = Object.values(AvailableResolutions);
 
 
 app.get('/', (req: Request, res: Response) => {
@@ -116,30 +117,29 @@ app.put('/videos/:id', (req: Request, res: Response) => {
     const body = req.body;
     const videoId: number = Number(req.params.id);
 
-    const errors: ValidationError[] = validateUpdateDto(body);
+    const existVideo: VideoDto | undefined = db.videos.find((video: VideoDto): boolean => video.id === videoId);
+    if (!existVideo) {
+        res.sendStatus(HTTP_STATUS.NOT_FOUND_404);
+        return;
+    }
+
+    const errors: ValidationError[] = validateUpdateDto(body, existVideo);
 
     if (errors.length) {
         res.status(HTTP_STATUS.BAD_REQUEST_400).json({ errorsMessages: errors });
         return;
     }
 
-    const existVideo: VideoDto | undefined = db.videos.find((video: VideoDto): boolean => video.id === videoId);
-
-    if (!existVideo) {
-        res.status(HTTP_STATUS.NOT_FOUND_404);
-        return;
+    existVideo.title = body.title;
+    existVideo.author = body.author;
+    if (!existVideo.availableResolutions.includes(body.availableResolutions)) {
+        existVideo.availableResolutions.push(...body.availableResolutions);
     }
+    existVideo.canBeDownloaded = body.canBeDownloaded;
+    existVideo.minAgeRestriction = body.minAgeRestriction;
+    existVideo.publicationDate = body.publicationDate;
 
-    const videoEdit: VideoUpdateDto = {
-        title: body.title,
-        author: body.author,
-        availableResolutions: body.availableResolutions,
-        canBeDownloaded: body.canBeDownloaded,
-        minAgeRestriction: body.minAgeRestriction,
-        publicationDate: body.publicationDate,
-    }
-
-    res.sendStatus(HTTP_STATUS.NOT_CONTENT_204);
+    res.sendStatus(HTTP_STATUS.NO_CONTENT_204);
 })
 
 app.delete('/videos/:id', (req: Request, res: Response) => {
@@ -154,12 +154,12 @@ app.delete('/videos/:id', (req: Request, res: Response) => {
 
     db.videos = db.videos.filter((video: VideoDto): boolean => video.id !== videoId);
 
-    res.sendStatus(HTTP_STATUS.NOT_CONTENT_204)
+    res.sendStatus(HTTP_STATUS.NO_CONTENT_204)
 })
 
 app.delete('/testing/all-data', (req: Request, res: Response) => {
     db.videos = [];
-    res.sendStatus(HTTP_STATUS.NOT_CONTENT_204)
+    res.sendStatus(HTTP_STATUS.NO_CONTENT_204)
 })
 
 app.listen(port, () => {

@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.validateUpdateDto = void 0;
 const index_1 = require("../index");
-const validateUpdateDto = (data) => {
+const validateUpdateDto = (data, existingVideo) => {
     const errors = [];
     if (!data.title || typeof data.title !== 'string' || data.title.trim().length < 2 || data.title.trim().length > 40) {
         errors.push({ message: 'Invalid title', field: 'title' });
@@ -18,12 +18,19 @@ const validateUpdateDto = (data) => {
     }
     else if (data.availableResolutions) {
         if (!Array.isArray(data.availableResolutions)) {
-            errors.push({ message: 'Invalid author', field: 'availableResolutions' });
+            errors.push({ message: 'Invalid availableResolutions', field: 'availableResolutions' });
+        }
+        else if (!data.availableResolutions.length) {
+            errors.push({ message: 'AvailableResolutions is not empty', field: 'availableResolutions' });
         }
         else {
             const isValidAvailableResolutions = data.availableResolutions.every((resolution) => Object.values(index_1.AvailableResolutions).includes(resolution));
+            const isAvailableResolutions = existingVideo.availableResolutions.every((resolution) => data.availableResolutions.includes(resolution));
             if (!isValidAvailableResolutions) {
                 errors.push({ message: 'Invalid resolution values', field: 'availableResolutions' });
+            }
+            else if (isAvailableResolutions) {
+                errors.push({ message: 'Such an extension already exists', field: 'availableResolutions' });
             }
         }
     }
