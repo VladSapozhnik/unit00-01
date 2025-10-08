@@ -3,12 +3,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AvailableResolutions = exports.HTTP_STATUS = exports.dateIso = exports.app = void 0;
+exports.AvailableResolutions = exports.HTTP_STATUS = exports.app = void 0;
 const express_1 = __importDefault(require("express"));
+const validationCreateDto_1 = require("./validators/validationCreateDto");
+const updateCreateDto_1 = require("./validators/updateCreateDto");
 const port = 3005;
 exports.app = (0, express_1.default)();
 exports.app.use(express_1.default.json());
-exports.dateIso = new Date().toISOString();
+const dateIso = new Date().toISOString();
 exports.HTTP_STATUS = {
     OK_200: 200,
     CREATED_201: 201,
@@ -27,12 +29,6 @@ var AvailableResolutions;
     AvailableResolutions["P1440"] = "P1440";
     AvailableResolutions["P2160"] = "P2160";
 })(AvailableResolutions || (exports.AvailableResolutions = AvailableResolutions = {}));
-class HttpError extends Error {
-    constructor(statusCode, message) {
-        super(message);
-        this.statusCode = statusCode;
-    }
-}
 const db = {
     videos: [
         {
@@ -49,6 +45,7 @@ const db = {
         }
     ]
 };
+// const allowedResolutions: AvailableResolutions[] = Object.values(AvailableResolutions);
 exports.app.get('/', (req, res) => {
     res.send('Main page!!!');
 });
@@ -67,82 +64,47 @@ exports.app.get('/videos/:id', (req, res) => {
     res.json(video);
 });
 exports.app.post('/videos', (req, res) => {
-    const { title, author, availableResolutions } = req.body;
-    const isValidAvailableResolutions = Array.isArray(availableResolutions) && availableResolutions.every((resolution) => Object.values(AvailableResolutions).includes(resolution));
-    if (typeof title !== "string" || title.trim() === "" || title.length > 39,
-        typeof author !== "string" || author.trim() === "" || author.length > 19 || !isValidAvailableResolutions) {
-        res.status(exports.HTTP_STATUS.BAD_REQUEST_400).send({
-            errorsMessages: [
-                {
-                    "message": "Invalid input data. Need title, author, and availableResolutions[]",
-                    "field": "title, author, and availableResolutions[]"
-                }
-            ]
-        });
+    const body = req.body;
+    const errors = (0, validationCreateDto_1.validationCreateDto)(body);
+    if (errors.length) {
+        res.status(exports.HTTP_STATUS.BAD_REQUEST_400).json({ errorsMessages: errors });
         return;
     }
     const video = {
         id: Number(new Date()),
-        title,
-        author,
+        title: body.title,
+        author: body.author,
         canBeDownloaded: true,
         minAgeRestriction: null,
-        createdAt: exports.dateIso,
-        publicationDate: exports.dateIso,
-        availableResolutions,
+        createdAt: dateIso,
+        publicationDate: dateIso,
+        availableResolutions: body.availableResolutions,
     };
     db.videos.push(video);
     res.status(exports.HTTP_STATUS.CREATED_201).json(video);
 });
 exports.app.put('/videos/:id', (req, res) => {
-    // const userId: number = Number(req.params.id);
-    // const name: string | undefined = req.body?.name;
-    //
-    // const videoEdit = {
-    //     "title": "string",
-    //     "author": "string",
-    //     "availableResolutions": ["P144"],
-    //     "canBeDownloaded": true,
-    //     "minAgeRestriction": 18,
-    //     "publicationDate": "2025-10-07T10:06:12.459Z"
-    // }
-    //
-    // if (!name) {
-    //     res.sendStatus(HTTP_STATUS.BAD_REQUEST_400);
-    //     return;
-    // }
-    //
-    // const existUser = db.users.find(user => user.id === userId)
-    //
-    // if (!existUser) {
-    //     res.sendStatus(HTTP_STATUS.NOT_FOUND_404);
-    //     return;
-    // }
-    //
-    // db.users = db.users.map((user: User): User => {
-    //     if(user.id === userId){
-    //         user.name = name;
-    //     }
-    //
-    //     return user;
-    // });
-    //
-    // res.sendStatus(HTTP_STATUS.NOT_CONTENT_204)
+    const body = req.body;
     const videoId = Number(req.params.id);
+    const errors = (0, updateCreateDto_1.validateUpdateDto)(body);
+    if (errors.length) {
+        res.status(exports.HTTP_STATUS.BAD_REQUEST_400).json({ errorsMessages: errors });
+        return;
+    }
     const existVideo = db.videos.find((video) => video.id === videoId);
     if (!existVideo) {
         res.status(exports.HTTP_STATUS.NOT_FOUND_404);
         return;
     }
-    const { title, author, availableResolutions, minAgeRestriction, canBeDownloaded } = req.body;
     const videoEdit = {
-        title,
-        author,
-        availableResolutions,
-        canBeDownloaded,
-        minAgeRestriction,
-        "publicationDate": exports.dateIso
+        title: body.title,
+        author: body.author,
+        availableResolutions: body.availableResolutions,
+        canBeDownloaded: body.canBeDownloaded,
+        minAgeRestriction: body.minAgeRestriction,
+        publicationDate: body.publicationDate,
     };
+    res.sendStatus(exports.HTTP_STATUS.NOT_CONTENT_204);
 });
 exports.app.delete('/videos/:id', (req, res) => {
     const videoId = Number(req.params.id);

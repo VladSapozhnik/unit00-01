@@ -1,10 +1,12 @@
 import express, { Request, Response } from "express";
+import {validationCreateDto} from "./validators/validationCreateDto";
+import {validateUpdateDto, VideoUpdateDto} from "./validators/updateCreateDto";
 const port = 3005;
 export const app = express();
 
 app.use(express.json());
 
-export const dateIso: string = new Date().toISOString()
+const dateIso: string = new Date().toISOString()
 
 export const HTTP_STATUS = {
     OK_200: 200,
@@ -26,24 +28,22 @@ export enum AvailableResolutions {
     P2160 = "P2160",
 }
 
-interface Video {
+interface VideoDto {
     id: number,
     title: string,
     author: string,
+    availableResolutions: AvailableResolutions[]
     canBeDownloaded: boolean,
     minAgeRestriction: null | number,
     createdAt: string,
     publicationDate: string,
-    availableResolutions: AvailableResolutions[]
 }
 
-class HttpError extends Error {
-    statusCode: number;
-    constructor(statusCode: number, message: string) {
-        super(message);
-        this.statusCode = statusCode;
-    }
+export interface ValidationError {
+    field: string;
+    message: string;
 }
+
 
 const db = {
     videos: [
@@ -61,6 +61,8 @@ const db = {
         }
     ]
 };
+// const allowedResolutions: AvailableResolutions[] = Object.values(AvailableResolutions);
+
 
 app.get('/', (req: Request, res: Response) => {
     res.send('Main page!!!')
@@ -75,7 +77,7 @@ app.get('/videos', (req: Request, res: Response) => {
 app.get('/videos/:id', (req: Request, res: Response) => {
     const videoId: number = Number(req.params.id);
 
-    const video: Video | undefined = db.videos.find(video => video.id === videoId)
+    const video: VideoDto | undefined = db.videos.find(video => video.id === videoId)
 
     if (!video) {
         res.sendStatus(HTTP_STATUS.NOT_FOUND_404);
@@ -86,32 +88,24 @@ app.get('/videos/:id', (req: Request, res: Response) => {
 })
 
 app.post('/videos', (req: Request, res: Response) => {
-    const { title, author, availableResolutions } = req.body;
+    const body = req.body;
 
-    const isValidAvailableResolutions: boolean = Array.isArray(availableResolutions) && availableResolutions.every((resolution: string)  => (Object.values(AvailableResolutions) as string[]).includes(resolution));
+    const errors: ValidationError[] = validationCreateDto(body);
 
-    if (typeof title !== "string" || title.trim() === "" || title.length > 39,
-        typeof author !== "string" || author.trim() === "" || author.length > 19 || !isValidAvailableResolutions) {
-        res.status(HTTP_STATUS.BAD_REQUEST_400).send({
-            errorsMessages: [
-                {
-                    "message": "Invalid input data. Need title, author, and availableResolutions[]",
-                    "field": "title, author, and availableResolutions[]"
-                }
-            ]
-        });
+    if (errors.length) {
+        res.status(HTTP_STATUS.BAD_REQUEST_400).json({ errorsMessages: errors });
         return;
     }
 
     const video = {
         id: Number(new Date()),
-        title,
-        author,
+        title: body.title,
+        author: body.author,
         canBeDownloaded: true,
         minAgeRestriction: null,
         createdAt: dateIso,
         publicationDate: dateIso,
-        availableResolutions,
+        availableResolutions: body.availableResolutions,
     }
 
     db.videos.push(video);
@@ -119,72 +113,46 @@ app.post('/videos', (req: Request, res: Response) => {
 })
 
 app.put('/videos/:id', (req: Request, res: Response) => {
-    // const userId: number = Number(req.params.id);
-    // const name: string | undefined = req.body?.name;
-    //
-    // const videoEdit = {
-    //     "title": "string",
-    //     "author": "string",
-    //     "availableResolutions": ["P144"],
-    //     "canBeDownloaded": true,
-    //     "minAgeRestriction": 18,
-    //     "publicationDate": "2025-10-07T10:06:12.459Z"
-    // }
-    //
-    // if (!name) {
-    //     res.sendStatus(HTTP_STATUS.BAD_REQUEST_400);
-    //     return;
-    // }
-    //
-    // const existUser = db.users.find(user => user.id === userId)
-    //
-    // if (!existUser) {
-    //     res.sendStatus(HTTP_STATUS.NOT_FOUND_404);
-    //     return;
-    // }
-    //
-    // db.users = db.users.map((user: User): User => {
-    //     if(user.id === userId){
-    //         user.name = name;
-    //     }
-    //
-    //     return user;
-    // });
-    //
-    // res.sendStatus(HTTP_STATUS.NOT_CONTENT_204)
-
+    const body = req.body;
     const videoId: number = Number(req.params.id);
 
-    const existVideo: Video | undefined = db.videos.find((video: Video): boolean => video.id === videoId);
+    const errors: ValidationError[] = validateUpdateDto(body);
+
+    if (errors.length) {
+        res.status(HTTP_STATUS.BAD_REQUEST_400).json({ errorsMessages: errors });
+        return;
+    }
+
+    const existVideo: VideoDto | undefined = db.videos.find((video: VideoDto): boolean => video.id === videoId);
 
     if (!existVideo) {
         res.status(HTTP_STATUS.NOT_FOUND_404);
         return;
     }
 
-    const { title, author, availableResolutions, minAgeRestriction, canBeDownloaded } = req.body;
-
-    const videoEdit = {
-        title,
-        author,
-        availableResolutions,
-        canBeDownloaded,
-        minAgeRestriction,
-        "publicationDate": dateIso
+    const videoEdit: VideoUpdateDto = {
+        title: body.title,
+        author: body.author,
+        availableResolutions: body.availableResolutions,
+        canBeDownloaded: body.canBeDownloaded,
+        minAgeRestriction: body.minAgeRestriction,
+        publicationDate: body.publicationDate,
     }
+
+    res.sendStatus(HTTP_STATUS.NOT_CONTENT_204);
 })
 
 app.delete('/videos/:id', (req: Request, res: Response) => {
     const videoId: number = Number(req.params.id);
 
-    const existVideo: Video | undefined = db.videos.find(video => video.id === videoId)
+    const existVideo: VideoDto | undefined = db.videos.find(video => video.id === videoId)
 
     if (!existVideo) {
         res.sendStatus(HTTP_STATUS.NOT_FOUND_404);
         return;
     }
 
-    db.videos = db.videos.filter((video: Video): boolean => video.id !== videoId);
+    db.videos = db.videos.filter((video: VideoDto): boolean => video.id !== videoId);
 
     res.sendStatus(HTTP_STATUS.NOT_CONTENT_204)
 })
