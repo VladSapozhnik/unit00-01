@@ -21,7 +21,12 @@ export const validateUpdateDto = (data: VideoUpdateDto): ValidationError[] => {
         errors.push({ message: 'Invalid author', field: 'author' });
     }
 
-    if (data.availableResolutions) {
+    if (!data.availableResolutions) {
+        errors.push({
+            message: 'availableResolutions is required',
+            field: 'availableResolutions',
+        });
+    } else if (data.availableResolutions) {
         if (!Array.isArray(data.availableResolutions)) {
             errors.push({ message: 'Invalid author', field: 'availableResolutions' });
         } else {
@@ -31,7 +36,6 @@ export const validateUpdateDto = (data: VideoUpdateDto): ValidationError[] => {
             }
         }
     }
-
 
     if (data.canBeDownloaded === undefined) {
         errors.push({

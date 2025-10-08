@@ -10,7 +10,13 @@ const validateUpdateDto = (data) => {
     if (!data.author || typeof data.author !== 'string' || data.author.trim().length < 2 || data.author.trim().length > 20) {
         errors.push({ message: 'Invalid author', field: 'author' });
     }
-    if (data.availableResolutions) {
+    if (!data.availableResolutions) {
+        errors.push({
+            message: 'availableResolutions is required',
+            field: 'availableResolutions',
+        });
+    }
+    else if (data.availableResolutions) {
         if (!Array.isArray(data.availableResolutions)) {
             errors.push({ message: 'Invalid author', field: 'availableResolutions' });
         }
