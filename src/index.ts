@@ -4,8 +4,8 @@ import {videosRouter} from "./routes/videos-router";
 import {db} from "./db";
 import {HTTP_STATUS} from "./constants/http-status";
 
-const port: number = Number(process.env.PORT) || 3000;
-export const app = express();
+export const port: number = Number(process.env.PORT) || 3000;
+const app = express();
 
 app.use(express.json());
 
