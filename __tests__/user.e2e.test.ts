@@ -83,6 +83,10 @@ describe('/videos', () => {
         await request(app).put('/videos/' + createVideoBody.id).send(exemplesUpdateVideo).expect(HTTP_STATUS.NO_CONTENT_204);
     })
 
+    it("should return 404 when video with given id does not exist", async () => {
+        await request(app).get(`/videos/${-100}`).expect(HTTP_STATUS.NOT_FOUND_404);
+    })
+
     it("should return 200 and get video by id", async () => {
         const videoId: number = Number(createVideoBody.id);
 
