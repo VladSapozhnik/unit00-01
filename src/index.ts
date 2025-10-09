@@ -15,7 +15,7 @@ export interface VideoResponseDto {
     title: string,
     author: string,
     canBeDownloaded: boolean,
-    minAgeRestriction: null | number,
+    minAgeRestriction: number | null,
     createdAt: string,
     publicationDate: string,
     availableResolutions: AvailableResolutions[]
