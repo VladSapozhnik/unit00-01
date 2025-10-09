@@ -5,7 +5,7 @@ import {db} from "./db";
 import {HTTP_STATUS} from "./constants/http-status";
 
 const port: number = Number(process.env.PORT) || 3000;
-const app = express();
+export const app = express();
 
 app.use(express.json());
 
@@ -24,5 +24,3 @@ app.delete('/testing/all-data', (req: Request, res: Response) => {
 app.listen(port, () => {
     console.log('starting to port: ' + port)
 })
-
-// export default app;

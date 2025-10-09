@@ -1,10 +1,11 @@
-import express from "express";
+// import express from "express";
 import request from "supertest";
 import {createValidator, VideoCreateDto} from "../src/validators/create-validator";
 import {updateValidator, VideoUpdateDto} from "../src/validators/update-validator";
 import {HTTP_STATUS} from "../src/constants/http-status";
 import {AvailableResolutions} from "../src/enum/available-resolutions";
 import {ValidationError} from "../src/types/error-type";
+import {app} from "../src";
 
 const exempleCreateVideo: VideoCreateDto = {
     title: "Как проходить проверку API",
@@ -27,7 +28,7 @@ const exemplesUpdateVideo: VideoUpdateDto = {
 }
 
 describe('/videos', () => {
-    const app = express();
+    // const app = express();
     beforeAll(async () => {
         await request(app).delete('/testing/all-data').expect(HTTP_STATUS.NO_CONTENT_204);
     })
