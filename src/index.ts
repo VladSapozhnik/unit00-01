@@ -6,32 +6,32 @@ import {AvailableResolutions} from "./enum/available-resolutions";
 import {db} from "./db";
 
 const port: number = Number(process.env.PORT) || 3000;
-export const app = express();
+const app = express();
 
 app.use(express.json());
 
-export interface VideoResponseDto {
-    id: number,
-    title: string,
-    author: string,
-    canBeDownloaded: boolean,
-    minAgeRestriction: number | null,
-    createdAt: string,
-    publicationDate: string,
-    availableResolutions: AvailableResolutions[]
-}
-
-export interface ValidationError {
-    field: string;
-    message: string;
-}
-
+// export interface VideoResponseDto {
+//     id: number,
+//     title: string,
+//     author: string,
+//     canBeDownloaded: boolean,
+//     minAgeRestriction: number | null,
+//     createdAt: string,
+//     publicationDate: string,
+//     availableResolutions: AvailableResolutions[]
+// }
+//
+// export interface ValidationError {
+//     field: string;
+//     message: string;
+// }
+//
 app.get('/', (req: Request, res: Response) => {
     res.send('Main page!!!')
 })
-
-app.use('/videos', videosRouter)
-
+//
+// app.use('/videos', videosRouter)
+//
 app.delete('/testing/all-data', (req: Request, res: Response) => {
     db.videos.length = 0;
     db.videos = [];

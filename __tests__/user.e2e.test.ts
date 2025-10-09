@@ -4,6 +4,7 @@ import {createValidator, VideoCreateDto} from "../src/validators/create-validato
 import {updateValidator, VideoUpdateDto} from "../src/validators/update-validator";
 import {HTTP_STATUS} from "../src/constants/http-status";
 import {AvailableResolutions} from "../src/enum/available-resolutions";
+import express from "express";
 
 const exempleCreateVideo: VideoCreateDto = {
     title: "Как проходить проверку API",
@@ -26,6 +27,7 @@ const exemplesUpdateVideo: VideoUpdateDto = {
 }
 
 describe('/videos', () => {
+    const app = express();
     beforeAll(async () => {
         await request(app).delete('/testing/all-data').expect(HTTP_STATUS.NO_CONTENT_204);
     })
