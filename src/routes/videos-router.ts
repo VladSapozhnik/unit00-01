@@ -7,7 +7,7 @@ import {HTTP_STATUS} from "../constants/http-status";``
 import {dateIso} from "../constants/date";
 import {db} from "../db";
 
-export const videosRouter = Router({});
+export const videosRouter = Router();
 
 videosRouter.get('/', (req: Request, res: Response) => {
     //Если эмитировать получение данных с db

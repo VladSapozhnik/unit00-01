@@ -8,7 +8,7 @@ const http_status_1 = require("../constants/http-status");
 ``;
 const date_1 = require("../constants/date");
 const db_1 = require("../db");
-exports.videosRouter = (0, express_1.Router)({});
+exports.videosRouter = (0, express_1.Router)();
 exports.videosRouter.get('/', (req, res) => {
     //Если эмитировать получение данных с db
     const videos = db_1.db.videos.map(video => video);
