@@ -4,7 +4,7 @@ import { Request, Response } from "express";
 import {createValidator} from "../validators/create-validator";
 import {updateValidator, VideoUpdateDto} from "../validators/update-validator";
 import {HTTP_STATUS} from "../constants/http-status";``
-import {dateIso} from "../constants/date";
+import {dateIso, dateNumber} from "../constants/date";
 import {db} from "../db";
 
 export const videosRouter = Router();
@@ -31,7 +31,8 @@ videosRouter.get('/:id', (req: Request, res: Response) => {
 videosRouter.post('/', (req: Request, res: Response) => {
     const body = req.body;
 
-    const publicationDate = new Date(dateIso + 24 * 60 * 60 * 1000).toISOString();
+    const date = new Date(dateIso)
+    const publicationDate = new Date(Number(date) + 24 * 60 * 60 * 1000).toISOString();
 
     const errors: ValidationError[] = createValidator(body);
 
