@@ -18,7 +18,7 @@ export const updateValidator = (data: VideoUpdateDto): ValidationError[] => {
     }
 
     if (!data.author || typeof data.author !== 'string' || data.author.trim().length < 2 || data.author.trim().length > 20) {
-        errors.push({ message: 'Invalid author', field: 'author' });
+        errors.push({ message: `Invalid author ${data.author}`, field: 'author' });
     }
 
     if (!data.availableResolutions) {
