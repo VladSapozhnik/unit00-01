@@ -31,7 +31,7 @@ videosRouter.get('/:id', (req: Request, res: Response) => {
 videosRouter.post('/', (req: Request, res: Response) => {
     const body = req.body;
 
-    const publicationDate = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+    const publicationDate = new Date(dateIso + 24 * 60 * 60 * 1000).toISOString();
 
     const errors: ValidationError[] = createValidator(body);
 
