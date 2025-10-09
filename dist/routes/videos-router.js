@@ -25,7 +25,8 @@ exports.videosRouter.get('/:id', (req, res) => {
 });
 exports.videosRouter.post('/', (req, res) => {
     const body = req.body;
-    const publicationDate = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+    const date = new Date(date_1.dateIso);
+    const publicationDate = new Date(Number(date) + 24 * 60 * 60 * 1000).toISOString();
     const errors = (0, create_validator_1.createValidator)(body);
     if (errors.length) {
         res.status(http_status_1.HTTP_STATUS.BAD_REQUEST_400).json({ errorsMessages: errors });

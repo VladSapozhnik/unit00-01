@@ -4,7 +4,7 @@ import { Request, Response } from "express";
 import {createValidator} from "../validators/create-validator";
 import {updateValidator, VideoUpdateDto} from "../validators/update-validator";
 import {HTTP_STATUS} from "../constants/http-status";``
-import {dateIso, dateNumber} from "../constants/date";
+import {dateIso} from "../constants/date";
 import {db} from "../db";
 
 export const videosRouter = Router();

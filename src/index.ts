@@ -38,8 +38,8 @@ app.delete('/testing/all-data', (req: Request, res: Response) => {
     res.sendStatus(HTTP_STATUS.NO_CONTENT_204)
 })
 
-// app.listen(port, () => {
-//     console.log('starting to port: ' + port)
-// })
+app.listen(port, () => {
+    console.log('starting to port: ' + port)
+})
 
-export default app;
+// export default app;
