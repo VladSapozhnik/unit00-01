@@ -1,6 +1,5 @@
 import {AvailableResolutions} from "../enum/available-resolutions";
 import {ValidationError} from "../types/error-type";
-import {port} from "../index";
 
 export interface VideoCreateDto {
     title: string,
@@ -10,7 +9,7 @@ export interface VideoCreateDto {
 
 export const createValidator = (data: VideoCreateDto): ValidationError[] => {
     const errors: ValidationError[] = [];
-    console.log(port)
+
     if (!data.title ||  typeof data.title !== 'string' || data.title.trim().length < 2 || data.title.trim().length > 40) {
         errors.push({ message: 'Invalid title', field: 'title',  });
     }
