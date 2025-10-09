@@ -20,6 +20,8 @@ exports.app.delete('/testing/all-data', (req, res) => {
     db_1.db.videos = [];
     res.sendStatus(http_status_1.HTTP_STATUS.NO_CONTENT_204);
 });
-exports.app.listen(port, () => {
-    console.log('starting to port: ' + port);
-});
+// module.exports = app;
+// app.listen(port, () => {
+//     console.log('starting to port: ' + port)
+// })
+exports.default = exports.app;
