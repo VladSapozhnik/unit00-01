@@ -6,5 +6,8 @@
   ],
   "routes": [
     { "src": "/(.*)", "dest": "src/index.ts" }
-  ]
+  ],
+  "config": {
+    "installCommand": "yarn install"
+  }
 }
