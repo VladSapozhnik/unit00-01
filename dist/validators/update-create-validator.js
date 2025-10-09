@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.validateUpdateDto = void 0;
-const availableResolutions_1 = require("../enum/availableResolutions");
+const available_resolutions_1 = require("../enum/available-resolutions");
 const validateUpdateDto = (data) => {
     const errors = [];
     if (!data.title || typeof data.title !== 'string' || data.title.trim().length < 2 || data.title.trim().length > 40) {
@@ -24,7 +24,7 @@ const validateUpdateDto = (data) => {
             errors.push({ message: 'AvailableResolutions is not empty', field: 'availableResolutions' });
         }
         else {
-            const isValidAvailableResolutions = data.availableResolutions.every((resolution) => Object.values(availableResolutions_1.AvailableResolutions).includes(resolution));
+            const isValidAvailableResolutions = data.availableResolutions.every((resolution) => Object.values(available_resolutions_1.AvailableResolutions).includes(resolution));
             if (!isValidAvailableResolutions) {
                 errors.push({ message: 'Invalid resolution values', field: 'availableResolutions' });
             }

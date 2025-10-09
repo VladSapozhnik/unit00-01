@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.validationCreateDto = void 0;
+exports.createValidator = void 0;
 const available_resolutions_1 = require("../enum/available-resolutions");
-const validationCreateDto = (data) => {
+const createValidator = (data) => {
     const errors = [];
     if (!data.title || typeof data.title !== 'string' || data.title.trim().length < 2 || data.title.trim().length > 40) {
         errors.push({ message: 'Invalid title', field: 'title', });
@@ -32,4 +32,4 @@ const validationCreateDto = (data) => {
     }
     return errors;
 };
-exports.validationCreateDto = validationCreateDto;
+exports.createValidator = createValidator;

@@ -1,7 +1,9 @@
 import request from "supertest";
-import {app, AvailableResolutions, HTTP_STATUS, ValidationError} from "../src";
-import {validationCreateDto, VideoCreateDto} from "../src/validators/validationCreateDto";
-import {VideoUpdateDto} from "../src/validators/updateCreateDto";
+import {app, ValidationError} from "../src";
+import {createValidator, VideoCreateDto} from "../src/validators/create-validator";
+import {updateValidator, VideoUpdateDto} from "../src/validators/update-validator";
+import {HTTP_STATUS} from "../src/constants/http-status";
+import {AvailableResolutions} from "../src/enum/available-resolutions";
 
 const exempleCreateVideo: VideoCreateDto = {
     title: "Как проходить проверку API",
@@ -37,7 +39,7 @@ describe('/videos', () => {
 
         const response = await request(app).post('/videos').send(body).expect(HTTP_STATUS.BAD_REQUEST_400);
 
-        const errors: ValidationError[] = validationCreateDto(body);
+        const errors: ValidationError[] = createValidator(body);
 
         expect(response.body).toEqual({ errorsMessages: errors })
 
@@ -74,13 +76,15 @@ describe('/videos', () => {
 
         const response = await request(app).put("/videos/" + createVideoBody.id).send(body).expect(HTTP_STATUS.BAD_REQUEST_400);
 
-        const errors: ValidationError[] = validationCreateDto(body);
+        const errors: ValidationError[] = updateValidator(body);
 
         expect(response.body).toEqual({ errorsMessages: errors })
     });
 
     it("should return 204 and update video when data is valid", async () => {
         await request(app).put('/videos/' + createVideoBody.id).send(exemplesUpdateVideo).expect(HTTP_STATUS.NO_CONTENT_204);
+
+        Object.assign(createVideoBody, exemplesUpdateVideo)
     })
 
     it("should return 404 when video with given id does not exist", async () => {
@@ -90,7 +94,7 @@ describe('/videos', () => {
     it("should return 200 and get video by id", async () => {
         const videoId: number = Number(createVideoBody.id);
 
-        await request(app).get(`/videos/${videoId}`).expect(HTTP_STATUS.OK_200, {...createVideoBody, ...exemplesUpdateVideo});
+        await request(app).get(`/videos/${videoId}`).expect(HTTP_STATUS.OK_200, createVideoBody);
     })
 
     it("should return 404 for non-existent video deletion", async () => {

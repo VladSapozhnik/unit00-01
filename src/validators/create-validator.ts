@@ -1,4 +1,5 @@
-import {AvailableResolutions, ValidationError} from "../index";
+import {ValidationError} from "../index";
+import {AvailableResolutions} from "../enum/available-resolutions";
 
 export interface VideoCreateDto {
     title: string,
@@ -6,7 +7,7 @@ export interface VideoCreateDto {
     availableResolutions: AvailableResolutions[]
 }
 
-export const validationCreateDto = (data: VideoCreateDto): ValidationError[] => {
+export const createValidator = (data: VideoCreateDto): ValidationError[] => {
     const errors: ValidationError[] = [];
 
     if (!data.title ||  typeof data.title !== 'string' || data.title.trim().length < 2 || data.title.trim().length > 40) {
