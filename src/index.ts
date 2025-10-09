@@ -10,36 +10,36 @@ const app = express();
 
 app.use(express.json());
 
-// export interface VideoResponseDto {
-//     id: number,
-//     title: string,
-//     author: string,
-//     canBeDownloaded: boolean,
-//     minAgeRestriction: number | null,
-//     createdAt: string,
-//     publicationDate: string,
-//     availableResolutions: AvailableResolutions[]
-// }
-//
-// export interface ValidationError {
-//     field: string;
-//     message: string;
-// }
-//
+export interface VideoResponseDto {
+    id: number,
+    title: string,
+    author: string,
+    canBeDownloaded: boolean,
+    minAgeRestriction: number | null,
+    createdAt: string,
+    publicationDate: string,
+    availableResolutions: AvailableResolutions[]
+}
+
+export interface ValidationError {
+    field: string;
+    message: string;
+}
+
 app.get('/', (req: Request, res: Response) => {
     res.send('Main page!!!')
 })
-//
-// app.use('/videos', videosRouter)
-//
+
+app.use('/videos', videosRouter)
+
 app.delete('/testing/all-data', (req: Request, res: Response) => {
     db.videos.length = 0;
     db.videos = [];
     res.sendStatus(HTTP_STATUS.NO_CONTENT_204)
 })
 
-app.listen(port, () => {
-    console.log('starting to port: ' + port)
-})
+// app.listen(port, () => {
+//     console.log('starting to port: ' + port)
+// })
 
-// export default app;
+export default app;
