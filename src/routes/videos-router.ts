@@ -1,11 +1,12 @@
 import {Router} from "express";
-import {ValidationError, VideoResponseDto} from "../index";
 import { Request, Response } from "express";
 import {createValidator} from "../validators/create-validator";
 import {updateValidator, VideoUpdateDto} from "../validators/update-validator";
 import {HTTP_STATUS} from "../constants/http-status";``
 import {dateIso} from "../constants/date";
 import {db} from "../db";
+import {ValidationError} from "../types/error-type";
+import {VideoResponseDto} from "../types/video-response-type";
 
 export const videosRouter = Router();
 

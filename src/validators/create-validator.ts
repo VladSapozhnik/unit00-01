@@ -1,5 +1,5 @@
-import {ValidationError} from "../index";
 import {AvailableResolutions} from "../enum/available-resolutions";
+import {ValidationError} from "../types/error-type";
 
 export interface VideoCreateDto {
     title: string,

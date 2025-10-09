@@ -1,10 +1,10 @@
+import express from "express";
 import request from "supertest";
-import {app, ValidationError} from "../src";
 import {createValidator, VideoCreateDto} from "../src/validators/create-validator";
 import {updateValidator, VideoUpdateDto} from "../src/validators/update-validator";
 import {HTTP_STATUS} from "../src/constants/http-status";
 import {AvailableResolutions} from "../src/enum/available-resolutions";
-import express from "express";
+import {ValidationError} from "../src/types/error-type";
 
 const exempleCreateVideo: VideoCreateDto = {
     title: "Как проходить проверку API",
