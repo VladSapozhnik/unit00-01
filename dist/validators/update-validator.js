@@ -5,7 +5,7 @@ const available_resolutions_1 = require("../enum/available-resolutions");
 const updateValidator = (data) => {
     const errors = [];
     if (!data.title || typeof data.title !== 'string' || data.title.trim().length < 2 || data.title.trim().length > 40) {
-        errors.push({ message: 'Invalid title', field: 'title' });
+        errors.push({ message: `Invalid title ${data.title}`, field: 'title' });
     }
     if (!data.author || typeof data.author !== 'string' || data.author.trim().length < 2 || data.author.trim().length > 20) {
         errors.push({ message: `Invalid author ${data.author}`, field: 'author' });
