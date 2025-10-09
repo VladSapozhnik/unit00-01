@@ -17,11 +17,12 @@ exports.app.get('/', (req, res) => {
 });
 exports.app.use('/videos', videos_router_1.videosRouter);
 exports.app.delete('/testing/all-data', (req, res) => {
+    db_1.db.videos.length = 0;
     db_1.db.videos = [];
     res.sendStatus(http_status_1.HTTP_STATUS.NO_CONTENT_204);
 });
 // module.exports = app;
-// app.listen(port, () => {
-//     console.log('starting to port: ' + port)
-// })
-exports.default = exports.app;
+exports.app.listen(port, () => {
+    console.log('starting to port: ' + port);
+});
+// export default app;

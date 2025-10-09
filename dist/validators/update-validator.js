@@ -53,16 +53,16 @@ const updateValidator = (data) => {
             errors.push({ message: 'minAgeRestriction must be a number between 1 and 18 or null', field: 'minAgeRestriction', });
         }
     }
-    if (!data.publicationDate) {
+    if (typeof data.publicationDate !== 'string' || data.publicationDate.trim().length === 0) {
         errors.push({
-            message: 'publicationDate is required',
+            message: 'publicationDate must be a non-empty string in ISO format',
             field: 'publicationDate',
         });
     }
-    else if (data.publicationDate !== undefined) {
+    else {
         const date = new Date(data.publicationDate);
         if (isNaN(date.getTime())) {
-            errors.push({ message: 'Invalid date', field: 'publicationDate', });
+            errors.push({ message: 'Invalid date format', field: 'publicationDate', });
         }
     }
     return errors;

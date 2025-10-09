@@ -25,6 +25,7 @@ exports.videosRouter.get('/:id', (req, res) => {
 });
 exports.videosRouter.post('/', (req, res) => {
     const body = req.body;
+    const publicationDate = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
     const errors = (0, create_validator_1.createValidator)(body);
     if (errors.length) {
         res.status(http_status_1.HTTP_STATUS.BAD_REQUEST_400).json({ errorsMessages: errors });
@@ -34,10 +35,10 @@ exports.videosRouter.post('/', (req, res) => {
         id: Number(new Date()),
         title: body.title,
         author: body.author,
-        canBeDownloaded: true,
+        canBeDownloaded: false,
         minAgeRestriction: null,
         createdAt: date_1.dateIso,
-        publicationDate: date_1.dateIso,
+        publicationDate,
         availableResolutions: body.availableResolutions,
     };
     db_1.db.videos.push(video);

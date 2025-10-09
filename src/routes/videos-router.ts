@@ -31,6 +31,8 @@ videosRouter.get('/:id', (req: Request, res: Response) => {
 videosRouter.post('/', (req: Request, res: Response) => {
     const body = req.body;
 
+    const publicationDate = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+
     const errors: ValidationError[] = createValidator(body);
 
     if (errors.length) {
@@ -42,10 +44,10 @@ videosRouter.post('/', (req: Request, res: Response) => {
         id: Number(new Date()),
         title: body.title,
         author: body.author,
-        canBeDownloaded: true,
+        canBeDownloaded: false,
         minAgeRestriction: null,
         createdAt: dateIso,
-        publicationDate: dateIso,
+        publicationDate,
         availableResolutions: body.availableResolutions,
     }
 

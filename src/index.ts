@@ -33,11 +33,10 @@ app.get('/', (req: Request, res: Response) => {
 app.use('/videos', videosRouter)
 
 app.delete('/testing/all-data', (req: Request, res: Response) => {
+    db.videos.length = 0;
     db.videos = [];
     res.sendStatus(HTTP_STATUS.NO_CONTENT_204)
 })
-
-// module.exports = app;
 
 // app.listen(port, () => {
 //     console.log('starting to port: ' + port)
