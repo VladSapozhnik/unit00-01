@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.validateUpdateDto = void 0;
 const index_1 = require("../index");
-const validateUpdateDto = (data, existingVideo) => {
+const validateUpdateDto = (data) => {
     const errors = [];
     if (!data.title || typeof data.title !== 'string' || data.title.trim().length < 2 || data.title.trim().length > 40) {
         errors.push({ message: 'Invalid title', field: 'title' });
@@ -25,12 +25,8 @@ const validateUpdateDto = (data, existingVideo) => {
         }
         else {
             const isValidAvailableResolutions = data.availableResolutions.every((resolution) => Object.values(index_1.AvailableResolutions).includes(resolution));
-            const isAvailableResolutions = existingVideo.availableResolutions.every((resolution) => data.availableResolutions.includes(resolution));
             if (!isValidAvailableResolutions) {
                 errors.push({ message: 'Invalid resolution values', field: 'availableResolutions' });
-            }
-            else if (isAvailableResolutions) {
-                errors.push({ message: 'Such an extension already exists', field: 'availableResolutions' });
             }
         }
     }

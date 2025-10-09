@@ -9,7 +9,7 @@ export interface VideoUpdateDto {
     publicationDate: string,
 }
 
-export const validateUpdateDto = (data: VideoUpdateDto, existingVideo: VideoDto): ValidationError[] => {
+export const validateUpdateDto = (data: VideoUpdateDto): ValidationError[] => {
     const errors: ValidationError[] = [];
 
     if (!data.title ||  typeof data.title !== 'string' || data.title.trim().length < 2 || data.title.trim().length > 40) {
@@ -32,11 +32,8 @@ export const validateUpdateDto = (data: VideoUpdateDto, existingVideo: VideoDto)
             errors.push({ message: 'AvailableResolutions is not empty', field: 'availableResolutions' });
         } else {
             const isValidAvailableResolutions: boolean =  data.availableResolutions.every((resolution: string)  => (Object.values(AvailableResolutions) as string[]).includes(resolution));
-            const isAvailableResolutions: boolean = existingVideo.availableResolutions.every((resolution: AvailableResolutions) => data.availableResolutions.includes(resolution))
             if (!isValidAvailableResolutions) {
                 errors.push({ message: 'Invalid resolution values', field: 'availableResolutions' });
-            } else if (isAvailableResolutions) {
-                errors.push({ message: 'Such an extension already exists', field: 'availableResolutions' });
             }
         }
     }

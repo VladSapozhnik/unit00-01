@@ -123,7 +123,7 @@ app.put('/videos/:id', (req: Request, res: Response) => {
         return;
     }
 
-    const errors: ValidationError[] = validateUpdateDto(body, existVideo);
+    const errors: ValidationError[] = validateUpdateDto(body);
 
     if (errors.length) {
         res.status(HTTP_STATUS.BAD_REQUEST_400).json({ errorsMessages: errors });
@@ -132,9 +132,10 @@ app.put('/videos/:id', (req: Request, res: Response) => {
 
     existVideo.title = body.title;
     existVideo.author = body.author;
-    if (!existVideo.availableResolutions.includes(body.availableResolutions)) {
-        existVideo.availableResolutions.push(...body.availableResolutions);
-    }
+    // if (!existVideo.availableResolutions.includes(body.availableResolutions)) {
+    //     existVideo.availableResolutions.push(...body.availableResolutions);
+    // }
+    existVideo.availableResolutions = body.availableResolutions;
     existVideo.canBeDownloaded = body.canBeDownloaded;
     existVideo.minAgeRestriction = body.minAgeRestriction;
     existVideo.publicationDate = body.publicationDate;

@@ -15,6 +15,7 @@ const exemplesUpdateVideo: VideoUpdateDto = {
     title: "new name video",
     author: "new it-incubator",
     availableResolutions: [
+        AvailableResolutions.P240,
         AvailableResolutions.P480
     ],
     canBeDownloaded: true,
@@ -80,18 +81,10 @@ describe('/videos', () => {
 
     it("should return 204 and update video when data is valid", async () => {
         await request(app).put('/videos/' + createVideoBody.id).send(exemplesUpdateVideo).expect(HTTP_STATUS.NO_CONTENT_204);
-
-        // const response = await request(app).get('/videos').expect(HTTP_STATUS.OK_200,);
-        //
-        // createVideoBody = response.body;
-        // console.log(response.body)
-        // expect(response.body).toEqual(exemplesUpdateVideo);
     })
 
     it("should return 200 and get video by id", async () => {
         const videoId: number = Number(createVideoBody.id);
-
-        exemplesUpdateVideo.availableResolutions = [...createVideoBody.availableResolutions, ...exemplesUpdateVideo.availableResolutions, ];
 
         await request(app).get(`/videos/${videoId}`).expect(HTTP_STATUS.OK_200, {...createVideoBody, ...exemplesUpdateVideo});
     })

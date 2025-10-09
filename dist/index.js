@@ -90,16 +90,17 @@ exports.app.put('/videos/:id', (req, res) => {
         res.sendStatus(exports.HTTP_STATUS.NOT_FOUND_404);
         return;
     }
-    const errors = (0, updateCreateDto_1.validateUpdateDto)(body, existVideo);
+    const errors = (0, updateCreateDto_1.validateUpdateDto)(body);
     if (errors.length) {
         res.status(exports.HTTP_STATUS.BAD_REQUEST_400).json({ errorsMessages: errors });
         return;
     }
     existVideo.title = body.title;
     existVideo.author = body.author;
-    if (!existVideo.availableResolutions.includes(body.availableResolutions)) {
-        existVideo.availableResolutions.push(...body.availableResolutions);
-    }
+    // if (!existVideo.availableResolutions.includes(body.availableResolutions)) {
+    //     existVideo.availableResolutions.push(...body.availableResolutions);
+    // }
+    existVideo.availableResolutions = body.availableResolutions;
     existVideo.canBeDownloaded = body.canBeDownloaded;
     existVideo.minAgeRestriction = body.minAgeRestriction;
     existVideo.publicationDate = body.publicationDate;
