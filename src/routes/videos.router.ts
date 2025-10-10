@@ -6,7 +6,7 @@ import {HTTP_STATUS} from "../enum/http-status";``
 import {dateIso} from "../constants/dateIso";
 import {db} from "../db";
 import type {ErrorResponse, ValidationError} from "../types/error.type";
-import type {VideoResponseDto} from "../types/video-response.type";
+import type {ResponseVideoDto} from "../dto/video/response-video.dto";
 import type {RequestWithBody, RequestWithParam, RequestWithParamAndBody} from "../types/request.type";
 import type {CreateVideoDto} from "../dto/video/create-video.dto";
 import type {UpdateVideoDto} from "../dto/video/update-video.dto";
@@ -14,16 +14,16 @@ import type {QueryVideoDto} from "../dto/video/query-video.dto";
 
 export const videosRouter = Router();
 
-videosRouter.get('/', (req: Request, res: Response<VideoResponseDto[]>) => {
+videosRouter.get('/', (req: Request, res: Response<ResponseVideoDto[]>) => {
     //Если эмитировать получение данных с db
     const videos = db.videos.map(video => video);
     res.json(videos);
 })
 
-videosRouter.get('/:id', (req: RequestWithParam<QueryVideoDto>, res: Response<VideoResponseDto>) => {
+videosRouter.get('/:id', (req: RequestWithParam<QueryVideoDto>, res: Response<ResponseVideoDto>) => {
     const videoId: number = Number(req.params.id);
 
-    const video: VideoResponseDto | undefined = db.videos.find(video => video.id === videoId)
+    const video: ResponseVideoDto | undefined = db.videos.find(video => video.id === videoId)
 
     if (!video) {
         res.sendStatus(HTTP_STATUS.NOT_FOUND_404);
@@ -33,7 +33,7 @@ videosRouter.get('/:id', (req: RequestWithParam<QueryVideoDto>, res: Response<Vi
     res.json(video);
 })
 
-videosRouter.post('/', (req: RequestWithBody<CreateVideoDto>, res: Response<VideoResponseDto | ErrorResponse>) => {
+videosRouter.post('/', (req: RequestWithBody<CreateVideoDto>, res: Response<ResponseVideoDto | ErrorResponse>) => {
     const body: CreateVideoDto = req.body;
 
     const date = new Date(dateIso)
@@ -46,7 +46,7 @@ videosRouter.post('/', (req: RequestWithBody<CreateVideoDto>, res: Response<Vide
         return;
     }
 
-    const video: VideoResponseDto = {
+    const video: ResponseVideoDto = {
         id: Number(new Date()),
         title: body.title,
         author: body.author,
@@ -65,7 +65,7 @@ videosRouter.put('/:id', (req: RequestWithParamAndBody<QueryVideoDto, UpdateVide
     const body = req.body;
     const videoId: number = Number(req.params.id);
 
-    let existVideo: VideoResponseDto | undefined = db.videos.find((video): boolean => video.id === videoId);
+    let existVideo: ResponseVideoDto | undefined = db.videos.find((video): boolean => video.id === videoId);
     if (!existVideo) {
         res.sendStatus(HTTP_STATUS.NOT_FOUND_404);
         return;
@@ -95,14 +95,14 @@ videosRouter.put('/:id', (req: RequestWithParamAndBody<QueryVideoDto, UpdateVide
 videosRouter.delete('/:id', (req: RequestWithParam<QueryVideoDto>, res: Response) => {
     const videoId: number = Number(req.params.id);
 
-    const existVideo: VideoResponseDto | undefined = db.videos.find(video => video.id === videoId)
+    const existVideo: ResponseVideoDto | undefined = db.videos.find(video => video.id === videoId)
 
     if (!existVideo) {
         res.sendStatus(HTTP_STATUS.NOT_FOUND_404);
         return;
     }
 
-    db.videos = db.videos.filter((video: VideoResponseDto): boolean => video.id !== videoId);
+    db.videos = db.videos.filter((video: ResponseVideoDto): boolean => video.id !== videoId);
 
     res.sendStatus(HTTP_STATUS.NO_CONTENT_204)
 })

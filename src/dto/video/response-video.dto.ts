@@ -1,6 +1,6 @@
-import {AvailableResolutions} from "../enum/available-resolutions";
+import {AvailableResolutions} from "../../enum/available-resolutions";
 
-export type VideoResponseDto = {
+export type ResponseVideoDto = {
     id: number,
     title: string,
     author: string,
