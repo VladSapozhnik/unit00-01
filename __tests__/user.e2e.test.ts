@@ -39,7 +39,7 @@ describe('/videos', () => {
     });
 
     it("should return 400 and not create video if request body attribute is empty", async () => {
-        const body = {...exempleCreateVideo, title: ""}
+        const body: CreateVideoDto = {...exempleCreateVideo, title: ""}
 
         const response = await request(app).post('/videos').send(body).expect(HTTP_STATUS.BAD_REQUEST_400);
 
@@ -76,7 +76,7 @@ describe('/videos', () => {
     })
 
     it("should not update video if request body is invalid", async () => {
-        const body = {...exemplesUpdateVideo, title: ""};
+        const body: UpdateVideoDto = {...exemplesUpdateVideo, title: ""};
 
         const response = await request(app).put("/videos/" + createVideoBody.id).send(body).expect(HTTP_STATUS.BAD_REQUEST_400);
 

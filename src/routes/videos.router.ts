@@ -16,7 +16,7 @@ export const videosRouter = Router();
 
 videosRouter.get('/', (req: Request, res: Response<ResponseVideoDto[]>) => {
     //Если эмитировать получение данных с db
-    const videos = db.videos.map(video => video);
+    const videos: ResponseVideoDto[] = db.videos.map(video => video);
     res.json(videos);
 })
 
