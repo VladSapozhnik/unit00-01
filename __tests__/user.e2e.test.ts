@@ -7,6 +7,7 @@ import {AvailableResolutions} from "../src/enum/available-resolutions";
 import type {ValidationError} from "../src/types/error.type";
 import type {CreateVideoDto} from "../src/dto/video/create-video.dto";
 import type {UpdateVideoDto} from "../src/dto/video/update-video.dto";
+import {app} from "../src/setting";
 
 const exempleCreateVideo: CreateVideoDto = {
     title: "Как проходить проверку API",
@@ -29,7 +30,6 @@ const exemplesUpdateVideo: UpdateVideoDto = {
 }
 
 describe('/videos', () => {
-    const app = express();
     beforeAll(async () => {
         await request(app).delete('/testing/all-data').expect(HTTP_STATUS.NO_CONTENT_204);
     })
