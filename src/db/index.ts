@@ -1,6 +1,7 @@
 import {AvailableResolutions} from "../enum/available-resolutions";
+import type {VideoResponseDto} from "../types/video-response.type";
 
-export const db = {
+export const db: {videos: VideoResponseDto[]} = {
     videos: [
         {
             "id": 1,

@@ -1,6 +1,6 @@
 import {AvailableResolutions} from "../enum/available-resolutions";
 
-export interface VideoResponseDto {
+export type VideoResponseDto = {
     id: number,
     title: string,
     author: string,

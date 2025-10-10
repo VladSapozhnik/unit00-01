@@ -1,13 +1,9 @@
-import {AvailableResolutions} from "../enum/available-resolutions";
-import {ValidationError} from "../types/error-type";
+import {AvailableResolutions} from "../../enum/available-resolutions";
+import type {ValidationError} from "../../types/error.type";
+import type {CreateVideoDto} from "../../dto/video/create-video.dto";
 
-export interface VideoCreateDto {
-    title: string,
-    author: string,
-    availableResolutions: AvailableResolutions[]
-}
 
-export const createValidator = (data: VideoCreateDto): ValidationError[] => {
+export const createVideoValidator = (data: CreateVideoDto): ValidationError[] => {
     const errors: ValidationError[] = [];
 
     if (!data.title ||  typeof data.title !== 'string' || data.title.trim().length < 2 || data.title.trim().length > 40) {

@@ -2,8 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.videosRouter = void 0;
 const express_1 = require("express");
-const create_validator_1 = require("../validators/create-validator");
-const update_validator_1 = require("../validators/update-validator");
+const create_video_validator_1 = require("../validators/video/create-video.validator");
+const update_video_validator_1 = require("../validators/video/update-video.validator");
 const http_status_1 = require("../enum/http-status");
 ``;
 const dateIso_1 = require("../constants/dateIso");
@@ -27,7 +27,7 @@ exports.videosRouter.post('/', (req, res) => {
     const body = req.body;
     const date = new Date(dateIso_1.dateIso);
     const publicationDate = new Date(Number(date) + 24 * 60 * 60 * 1000).toISOString();
-    const errors = (0, create_validator_1.createValidator)(body);
+    const errors = (0, create_video_validator_1.createVideoValidator)(body);
     if (errors.length) {
         res.status(http_status_1.HTTP_STATUS.BAD_REQUEST_400).json({ errorsMessages: errors });
         return;
@@ -53,7 +53,7 @@ exports.videosRouter.put('/:id', (req, res) => {
         res.sendStatus(http_status_1.HTTP_STATUS.NOT_FOUND_404);
         return;
     }
-    const errors = (0, update_validator_1.updateValidator)(body);
+    const errors = (0, update_video_validator_1.updateVideoValidator)(body);
     if (errors.length) {
         res.status(http_status_1.HTTP_STATUS.BAD_REQUEST_400).json({ errorsMessages: errors });
         return;

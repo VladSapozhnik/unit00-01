@@ -1,8 +1,8 @@
 import express, { Request, Response } from "express";
 import 'dotenv/config'
-import {videosRouter} from "./routes/videos-router";
+import {videosRouter} from "./routes/videos.router";
 import {db} from "./db";
-import {HTTP_STATUS} from "./constants/http-status";
+import {HTTP_STATUS} from "./enum/http-status";
 
 const port: number = Number(process.env.PORT) || 3000;
 const app = express();

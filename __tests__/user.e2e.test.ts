@@ -1,12 +1,14 @@
 import express from "express";
 import request from "supertest";
-import {createValidator, VideoCreateDto} from "../src/validators/create-validator";
-import {updateValidator, VideoUpdateDto} from "../src/validators/update-validator";
-import {HTTP_STATUS} from "../src/constants/http-status";
+import {createVideoValidator} from "../src/validators/video/create-video.validator";
+import {updateVideoValidator} from "../src/validators/video/update-video.validator";
+import {HTTP_STATUS} from "../src/enum/http-status";
 import {AvailableResolutions} from "../src/enum/available-resolutions";
-import {ValidationError} from "../src/types/error-type";
+import type {ValidationError} from "../src/types/error.type";
+import type {CreateVideoDto} from "../src/dto/video/create-video.dto";
+import type {UpdateVideoDto} from "../src/dto/video/update-video.dto";
 
-const exempleCreateVideo: VideoCreateDto = {
+const exempleCreateVideo: CreateVideoDto = {
     title: "Как проходить проверку API",
     author: "it-incubator",
     availableResolutions: [
@@ -14,7 +16,7 @@ const exempleCreateVideo: VideoCreateDto = {
     ]
 }
 
-const exemplesUpdateVideo: VideoUpdateDto = {
+const exemplesUpdateVideo: UpdateVideoDto = {
     title: "new name video",
     author: "new it-incubator",
     availableResolutions: [
@@ -41,7 +43,7 @@ describe('/videos', () => {
 
         const response = await request(app).post('/videos').send(body).expect(HTTP_STATUS.BAD_REQUEST_400);
 
-        const errors: ValidationError[] = createValidator(body);
+        const errors: ValidationError[] = createVideoValidator(body);
 
         expect(response.body).toEqual({ errorsMessages: errors })
 
@@ -78,7 +80,7 @@ describe('/videos', () => {
 
         const response = await request(app).put("/videos/" + createVideoBody.id).send(body).expect(HTTP_STATUS.BAD_REQUEST_400);
 
-        const errors: ValidationError[] = updateValidator(body);
+        const errors: ValidationError[] = updateVideoValidator(body);
 
         expect(response.body).toEqual({ errorsMessages: errors })
     });
