@@ -1,8 +1,14 @@
 export type ValidationError = {
-    field: string;
+    /**
+     * message and field for error
+     */
     message: string;
+    field: string;
 }
 
 export type ErrorResponse = {
+    /**
+     * response error messages
+     */
     errorsMessages: ValidationError[];
 }
